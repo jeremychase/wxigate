@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"wxigate/calcrain"
 
 	"github.com/ebarkie/aprs"
 )
@@ -32,6 +33,8 @@ func awpHandlerV1(opts options) http.Handler {
 		Src:  opts.aprsSource,
 		Path: aprs.Path{aprs.Addr{Call: "TCPIP", Repeated: true}},
 	}
+
+	raindata := calcrain.Data{}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		query := req.URL.Query()
@@ -130,6 +133,16 @@ func awpHandlerV1(opts options) http.Handler {
 					return
 				}
 				wx.WindSpeed = int(windspeedmph)
+			}
+		}
+
+		if opts.calcRainLast24Hours {
+			raindata.Append(wx.RainToday, wx.Timestamp)
+
+			rl, err := raindata.RainLast24Hours(wx.RainToday, wx.Timestamp, opts.calcRainLast24HoursThreshold)
+
+			if err == nil {
+				wx.RainLast24Hours = rl
 			}
 		}
 

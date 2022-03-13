@@ -61,6 +61,9 @@ func parseArgs() (options, error) {
 	flag.UintVar(&opts.port, "port", DEFAULT_PORT, "tcp port (automatic 0)")
 	flag.StringVar(&opts.argAddress, "address", DEFAULT_ADDRESS_IPV4, "IP address")
 
+	flag.BoolVar(&opts.calcRainLast24Hours, "calcrain", false, "calculate trailing 24hr rainfall using daily rain")
+	flag.UintVar(&opts.calcRainLast24HoursThreshold, "calcrainmins", 15, "minutes beyond 24hr allowed for calcrain")
+
 	flag.Parse()
 
 	if len(dial) > 0 {
